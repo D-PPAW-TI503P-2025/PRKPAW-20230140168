@@ -1,0 +1,19 @@
+{
+  "name": "tugas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/D-PPAW-TI503P-2025/PRKPAW-20230140168.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/D-PPAW-TI503P-2025/PRKPAW-20230140168/issues"
+  },
+  "homepage": "https://github.com/D-PPAW-TI503P-2025/PRKPAW-20230140168#readme"
+}
