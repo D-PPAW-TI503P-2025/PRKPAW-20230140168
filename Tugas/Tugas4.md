@@ -11,6 +11,6 @@
 | Keterangan      | Screenshot                                              |
 | --------------- | ------------------------------------------------------- |
 | **Check-in**              | ![Screenshot GET ](./SS2/checkin.png)         |
-| **Check-out 1**           | ![Screenshot PUT ](./ss2/checkout.png)        |
+| **Check-out 1**           | ![Screenshot PUT ](./SS2/checkout.png)        |
 | **Database**              | ![Screenshot AFTER GET 2 ](./SS2/reportDatabase.png)  |
 | **Endpoint Report**       | ![Screenshot Hasil Akhir ](./SS2/Endpointreport.png)  |
