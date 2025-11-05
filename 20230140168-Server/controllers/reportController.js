@@ -1,39 +1,46 @@
+// controllers/reportController.js
+
+// 1. Impor Model Presensi dan Operator Sequelize
 const { Presensi } = require("../models");
-const { format } = require("date-fns-tz");
-const timeZone = "Asia/Jakarta";
+const { Op } = require("sequelize");
 
-exports.getDailyReport = async (req, res) => { // 2. Tambahkan async
-  console.log("Controller: Mengambil data laporan harian dari database...");
 
-  // 3. Gunakan try...catch untuk error handling
+// 2. Implementasi getDailyReport dengan filter Nama dan Rentang Tanggal
+exports.getDailyReport = async (req, res) => {
   try {
-    // 4. Ganti cara mengambil data menggunakan 'findAll' dari Sequelize
-    //    Kita urutkan berdasarkan checkIn terbaru (DESC)
-    const allRecords = await Presensi.findAll({
-      order: [["checkIn", "DESC"]],
-    });
+    // Ambil query parameters: nama, tanggalMulai, dan tanggalSelesai [cite: 110, 131]
+    const { nama, tanggalMulai, tanggalSelesai } = req.query;
+    let options = { where: {} };
 
-    // 5. (Opsional tapi disarankan) Format data agar konsisten
-    const formattedData = allRecords.map((record) => ({
-      userId: record.userId,
-      nama: record.nama,
-      checkIn: record.checkIn
-        ? format(record.checkIn, "yyyy-MM-dd HH:mm:ssXXX", { timeZone })
-        : null,
-      checkOut: record.checkOut
-        ? format(record.checkOut, "yyyy-MM-dd HH:mm:ssXXX", { timeZone })
-        : null,
-    }));
+    // Filter berdasarkan Nama (jika ada) [cite: 112]
+    if (nama) {
+      options.where.nama = {
+        [Op.like]: `%${nama}%`, // Mencari nama yang mengandung string tertentu [cite: 114]
+      };
+    }
 
+    // Filter berdasarkan Rentang Tanggal (Tugas Modul) 
+    if (tanggalMulai && tanggalSelesai) {
+      // Asumsi memfilter berdasarkan waktu dibuatnya record ('createdAt').
+      // Perlu dipastikan format tanggal yang dikirim dari query parameters
+      // sudah sesuai dengan format database.
+      options.where.createdAt = {
+        [Op.between]: [tanggalMulai, tanggalSelesai], // Menggunakan [Op.between] untuk rentang tanggal 
+      };
+    }
+
+    // Lakukan query ke database
+    const records = await Presensi.findAll(options); // Mengambil semua data dengan opsi filter [cite: 117]
+
+    // Kirimkan respon berhasil
     res.json({
-      reportDate: format(new Date(), "yyyy-MM-dd", { timeZone }), // Format tanggal laporan
-      data: formattedData, // Kirim data yang sudah diformat
+      reportDate: new Date().toLocaleDateString(),
+      data: records,
     });
-    
-  } catch (error) {
-    // 6. Tambahkan error handling
+    } catch (error) {
+    // Kirimkan respon error server
     res
       .status(500)
-      .json({ message: "Terjadi kesalahan pada server", error: error.message });
+      .json({ message: "Gagal mengambil laporan", error: error.message });
   }
 };
