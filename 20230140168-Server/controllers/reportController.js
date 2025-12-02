@@ -1,44 +1,59 @@
 // controllers/reportController.js
 
-// 1. Impor Model Presensi dan Operator Sequelize
-const { Presensi } = require("../models");
+// 1. Impor Model Presensi, User, dan Operator Sequelize
+const { Presensi, User } = require("../models"); // 🟢 PERBAIKAN: Impor Model User
 const { Op } = require("sequelize");
-
 
 // 2. Implementasi getDailyReport dengan filter Nama dan Rentang Tanggal
 exports.getDailyReport = async (req, res) => {
   try {
-    // Ambil query parameters: nama, tanggalMulai, dan tanggalSelesai [cite: 110, 131]
+    // Ambil query parameters
     const { nama, tanggalMulai, tanggalSelesai } = req.query;
-    let options = { where: {} };
+    
+    // Siapkan objek where untuk Presensi dan User
+    let presensiWhere = {};
+    let userWhere = {}; // 🟢 WHERE clause khusus untuk Model User
 
-    // Filter berdasarkan Nama (jika ada) [cite: 112]
+    // 🟢 PERBAIKAN FILTER NAMA (Harus diterapkan ke Model User)
     if (nama) {
-      options.where.nama = {
-        [Op.like]: `%${nama}%`, // Mencari nama yang mengandung string tertentu [cite: 114]
+      userWhere.nama = {
+        [Op.like]: `%${nama}%`,
       };
     }
 
-    // Filter berdasarkan Rentang Tanggal (Tugas Modul) 
+    // Filter berdasarkan Rentang Tanggal (terhadap createdAt)
     if (tanggalMulai && tanggalSelesai) {
-      // Asumsi memfilter berdasarkan waktu dibuatnya record ('createdAt').
-      // Perlu dipastikan format tanggal yang dikirim dari query parameters
-      // sudah sesuai dengan format database.
-      options.where.createdAt = {
-        [Op.between]: [tanggalMulai, tanggalSelesai], // Menggunakan [Op.between] untuk rentang tanggal 
+      // Menggunakan [Op.between] pada kolom 'createdAt' Presensi
+      presensiWhere.createdAt = {
+        [Op.between]: [tanggalMulai, tanggalSelesai],
       };
     }
+
+    // 🟢 PERBAIKAN: Gunakan properti 'include' untuk mengambil data User
+    const options = {
+      where: presensiWhere,
+      include: [
+        {
+          model: User, // Model yang akan di-join
+          as: 'user',  // Alias yang sesuai dengan models/presensi.js
+          where: userWhere, // 🟢 Terapkan filter nama di sini
+          attributes: ['nama', 'email'], // Kolom User yang ingin diambil
+          required: !!nama // Set required: true jika ada filter nama agar hanya mengambil record yang punya user
+        }
+      ]
+    };
 
     // Lakukan query ke database
-    const records = await Presensi.findAll(options); // Mengambil semua data dengan opsi filter [cite: 117]
+    const records = await Presensi.findAll(options);
 
     // Kirimkan respon berhasil
     res.json({
       reportDate: new Date().toLocaleDateString(),
       data: records,
     });
-    } catch (error) {
+  } catch (error) {
     // Kirimkan respon error server
+    console.error("Error fetching daily report:", error);
     res
       .status(500)
       .json({ message: "Gagal mengambil laporan", error: error.message });
