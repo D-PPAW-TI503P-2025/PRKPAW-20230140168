@@ -22,13 +22,17 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 7),
         allowNull: false,
     },
-      longitude: {
+    longitude: {
         type: DataTypes.DECIMAL(10, 7),
         allowNull: false,
       },
     checkOut: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    buktiFoto: { // [MODUL 10] Kolom untuk menyimpan path foto
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   }, {
     sequelize,

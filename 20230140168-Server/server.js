@@ -11,6 +11,12 @@ const presensiRoutes = require("./Routes/presensi"); // Router baru
 const reportRoutes = require("./Routes/reports");   // Router baru
 const authRoutes = require('./Routes/auth');
 
+const path = require('path'); 
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
 // Middleware Global
 app.use(cors()); // Mengizinkan request dari origin berbeda
 app.use(express.json()); // Mem-parsing body request JSON
@@ -32,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/books", ruteBuku); // Rute untuk buku
 app.use("/api/presensi", presensiRoutes); // Rute untuk presensi
 app.use("/api/reports", reportRoutes);   // Rute untuk reports
+
 
 // Jalankan Server
 app.listen(PORT, () => {
