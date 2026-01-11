@@ -10,5 +10,5 @@
 
 | Keterangan      | Screenshot                                              |
 | --------------- | ------------------------------------------------------- |
-| **halaman SensorLog**                                  | ![Screenshot POST ](./ss9/1.png)   |
-| **database Sensorlog**                                        | ![Screenshot POST ](./ss9/2.png)    |
+| **halaman SensorLog**                                         | ![Screenshot POST ](./ss9/1.png)      |
+| **database Sensorlog**                                        | ![Screenshot POST ](./ss9/2.png)      |
